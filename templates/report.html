@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>LinkedIn Analysis Report</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <!-- Include Bootstrap for styling -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            padding: 20px; /* Adjust padding for container */
+        }
+        .report-section {
+            margin-bottom: 20px; /* Consistent space between sections */
+        }
+        .plotly-graph-div, .table-responsive {
+            margin-left: auto;
+            margin-right: auto;
+            max-width: 100%; /* Ensure divs don't exceed the width of their container */
+        }
+        .table-responsive {
+            padding: 0; /* Reset padding */
+        }
+        table {
+            width: auto !important; /* Allow table to shrink or expand based on content */
+            margin-bottom: 0; /* Remove bottom margin from tables */
+        }
+        th, td {
+            white-space: nowrap; /* Prevent text from wrapping */
+            overflow: hidden; /* Hide text that overflows */
+            text-overflow: ellipsis; /* Add ellipsis to overflowed text */
+        }
+        /* Responsive tables */
+        @media screen and (max-width: 768px) {
+            .table-responsive {
+                padding: 0;
+            }
+            th, td {
+                max-width: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="my-4">LinkedIn Connections Analysis Report</h1>
+
+        <!-- Displaying General Analysis -->
+        <div id="general_analysis" class="report-section">
+            <h2>General Analysis</h2>
+            {% for key, value in general_analysis.items() %}
+                <p><strong>{{ key }}:</strong> {{ value }}</p>
+            {% endfor %}
+        </div>
+
+        <!-- Displaying Latest Connections -->
+        <div id="latest_connections" class="report-section table-responsive">
+            <h2>Latest Connections</h2>
+            {{ latest_connections | safe }}
+        </div>
+
+        <!-- Displaying Earliest Connections -->
+        <div id="earliest_connections" class="report-section table-responsive">
+            <h2>Earliest Connections</h2>
+            {{ earliest_connections | safe }}
+        </div>
+
+        <!-- Displaying Plotly Graphs -->
+        <div id="top_companies" class="report-section plotly-graph-div"></div>
+        <div id="top_positions" class="report-section plotly-graph-div"></div>
+        <div id="connections_over_time" class="report-section plotly-graph-div"></div>
+        <div id="cumulative_connections" class="report-section plotly-graph-div"></div>
+
+        <!-- Displaying Emails Table -->
+        <div id="emails_table" class="report-section table-responsive">
+            <h2>Contacts with Email Addresses</h2>
+        </div>
+
+        <script type="text/javascript">
+            var graphs = {{ graphsJSON | safe }};
+            Plotly.newPlot('top_companies', graphs.top_companies_fig.data, graphs.top_companies_fig.layout);
+            Plotly.newPlot('top_positions', graphs.top_positions_fig.data, graphs.top_positions_fig.layout);
+            Plotly.newPlot('connections_over_time', graphs.connections_date_fig.data, graphs.connections_date_fig.layout);
+            Plotly.newPlot('cumulative_connections', graphs.cumulative_connections_fig.data, graphs.cumulative_connections_fig.layout);
+
+            // Add the Emails Table HTML into the page
+            var emailsContent = graphs.emails_table_html; // assuming this is the correct variable from your JSON
+    var emailsDiv = document.createElement('div'); // create a new div for the table content
+    emailsDiv.innerHTML = emailsContent; // set the inner HTML to the emails table
+    document.getElementById('emails_table').appendChild(emailsDiv); // append the new div to emails_table
+        </script>
+    </div>
+</body>
+</html>
