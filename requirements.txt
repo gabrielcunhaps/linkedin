@@ -1,0 +1,5 @@
+json
+pandas==1.4.0
+plotly==5.5.0
+flask==2.1.0
+io
